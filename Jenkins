@@ -1,91 +1,88 @@
 pipeline {
     agent any
-    
+
+    environment {
+        DIRECTORY_PATH = "https://github.com/Tanaystudent/Deakin-Unit-Page.git"
+        TESTING_ENVIRONMENT = "TASK 6.2C"
+        PRODUCTION_ENVIRONMENT = "Pragati"
+    }
+
     stages {
-        stage('Checkout') {
-            steps {
-                script {
-                    echo 'Checking out code from the repository...'
-                   // checkout scm
-                   git branch: 'main', url: 'https://github.com/PragatiKuchhal/task-9.2cc.git'
-                }
-            }
-        }
-        
         stage('Build') {
             steps {
-                script {
-                    echo 'Starting Build stage...'
-                    // Perform build using Maven
-                    // sh 'mvn clean package'
-                }
+                echo "Fetching the source code from the directory path specified by the environment variable: ${env.DIRECTORY_PATH}"
+                echo "Compiling the code and generating any necessary artifacts, updated"
+                echo "updated new commit"
             }
         }
-        
-        stage('Unit and Integration Tests') {
+        stage('Test') {
             steps {
-                script {
-                    echo 'Starting Unit and Integration Tests stage...'
-                    // Run unit tests using JUnit
-                    // sh 'mvn test'
-                    // Run integration tests using Selenium or any other tool
-                    // sh 'your_integration_test_command_here'
-                     emailext attachLog: true, body: 'SIT223', subject: 'Jenkins', to: 'pragati4823.be22@chitkara.edu.in'
+                echo "Running unit tests"
+                echo "Running integration tests"
+                echo "updated new commit"
+            }
+            post {
+                success {
+                    emailext  subject: 'Unit Test Status - Success', 
+                              body: 'Unit Test has been completed successfully.', 
+                              to: "pragati4823.be22@chitkara.edu.in",
+                              attachLog: true
+                }
+                failure {
+                    emailext subject: 'Unit Test Status - Failure', 
+                              body: 'Unit Test has failed.', 
+                              to: "pragati4823.be22@chitkara.edu.in",
+                              attachLog: true
                 }
             }
         }
-        
-        stage('Code Analysis') {
+        stage('Code Quality Check') {
             steps {
-                script {
-                    echo 'Starting Code Analysis stage...'
-                    // Integrate code analysis using tools like SonarQube
-                    // sh 'sonar-scanner'
-                }
+                echo "Checking the quality of the code"
             }
         }
-        
         stage('Security Scan') {
             steps {
-                script {
-                    echo 'Starting Security Scan stage...'
-                    // Perform security scan using tools like OWASP ZAP
-                    // sh 'your_security_scan_command_here'
-                     emailext attachLog: true, body: 'SIT223', subject: 'Task6.2C', to: 'pragati4823.be22@chitkara.edu.in'
-                }
+                echo "Performing security scan on the code"
             }
         }
-        
         stage('Deploy to Staging') {
             steps {
-                script {
-                    echo 'Starting Deploy to Staging stage...'
-                    // Deploy to staging server using SSH or any deployment tool
-                    // sh 'your_deploy_to_staging_command_here'
+                echo "Deploying the application to a testing environment specified by the environment variable: ${env.TESTING_ENVIRONMENT}"
+            }
+            post {
+                success {
+                    emailext  subject: 'Security Scan Status - Success', 
+                              body: 'Security Scan has been completed successfully.', 
+                              to: "pragati4823.be22@chitkara.edu.in",
+                              attachLog: true
+                }
+                failure {
+                    emailext subject: 'Security Scan Status - Failure', 
+                              body: 'Security Scan has failed.', 
+                              to: "pragati4823.be22@chitkara.edu.in",
+                              attachLog: true
                 }
             }
         }
-        
         stage('Integration Tests on Staging') {
             steps {
+                echo "Running integration tests on the staging environment"
+                
+            }
+        }
+        stage('Approval') {
+            steps {
                 script {
-                    echo 'Starting Integration Tests on Staging stage...'
-                    // Run integration tests on staging environment
-                    // sh 'your_integration_test_on_staging_command_here'
+                    echo "Pausing for manual approval..."
                 }
             }
         }
-        
         stage('Deploy to Production') {
             steps {
-                script {
-                    echo 'Starting Deploy to Production stage...'
-                    // Deploy to production server using SSH or any deployment tool
-                    // sh 'your_deploy_to_production_command_here'
-                }
+                echo "Deploying the code to the production environment "
+               
             }
         }
     }
-    
-   
 }
